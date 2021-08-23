@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "reactClimber",
+  "version": "0.0.1",
+  "description": "Climbs and parses ReactJS nodes/components",
+  "author": "Sergey Zeygerman",
+  "permissions": [
+    "scripting"
+  ]
+}
