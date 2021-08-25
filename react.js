@@ -27,3 +27,20 @@ const getReactID = function(node) {
       return key.split('$')[1]
     }
 };
+
+const climbDownRoot = function(reactRootNode) {
+  class Node {
+    // thanks to Max Koretskyi
+    // https://indepth.dev/posts/1007/the-how-and-why-on-reacts-usage-of-linked-list-in-fiber-to-walk-the-components-tree#linked-list-traversal
+    constructor(instance) {
+      this.instance = instance;
+      this.child = null;
+      this.sibling = null;
+      this.return = null;
+    }
+  };
+  
+  const fiberRoot = reactRootNode._reactRootContainer._internalRoot;
+  const hostRoot = fiberRoot.current; // head of the Fiber tree (fiberRoot is backreferenced via current.stateNode)
+
+}
