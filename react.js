@@ -39,14 +39,15 @@ class FiberNode {
     this.sibling = instance.sibling;
     this.return = instance.return;
     this.rendersElement = instance.elementType ? true : false;
-    this.name = instance.type.displayName
+    this.name = instance.type? instance.type.displayName : null;
   }
 };
 
-const getHostRoot = function(reactRootNode) {
+const getHostRoot = function(reactRootNode, returnFiberNode=true) {
   const fiberRoot = reactRootNode._reactRootContainer._internalRoot;
   const hostRoot = fiberRoot.current; // head of the Fiber tree (fiberRoot is backreferenced via current.stateNode)
-  return new FiberNode(hostRoot);
+  if (returnFiberNode) return new FiberNode(hostRoot);
+  return hostRoot;
 };
 
 const climbFiber = function(fiberNode) {
@@ -64,3 +65,9 @@ const climbFiber = function(fiberNode) {
 
   return fiberNode;
 };
+
+// this is for testing the above by running it on a page and traversing through the first Fiber root
+let roots = getReactRoots();
+let reactID = getReactID(roots[0]);
+let hostRoot = getHostRoot(roots[0]);
+let reactTree = climbFiber(hostRoot);
