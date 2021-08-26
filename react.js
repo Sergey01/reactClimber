@@ -68,6 +68,7 @@ const climbFiber = function(fiberNode) {
 
 // this is for testing the above by running it on a page and traversing through the first Fiber root
 let roots = getReactRoots();
-let reactID = getReactID(roots[0]);
-let hostRoot = getHostRoot(roots[0]);
+let firstRootNode = roots[0] ? roots[0] : null;
+let reactID = getReactID(firstRootNode);
+let hostRoot = getHostRoot(firstRootNode);
 let reactTree = climbFiber(hostRoot);
