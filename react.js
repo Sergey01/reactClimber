@@ -1,4 +1,4 @@
-const VERBOSE = true;
+const VERBOSE = false;
 
 const getReactRoots = function(startNode = document) {
   const reactRoots = [];
@@ -50,25 +50,50 @@ const getHostRoot = function(reactRootNode, returnFiberNode=true) {
   return hostRoot;
 };
 
-const climbFiber = function(fiberNode) {
+const buildFiberTree = function(fiberNode) {
   if (VERBOSE) console.log(`traversing ${fiberNode.name}`);
   
   if (fiberNode.sibling) {
     if (VERBOSE) console.log(`sibling node of ${fiberNode.name} found`);
-    climbFiber(new FiberNode(fiberNode.sibling));
+    buildFiberTree(new FiberNode(fiberNode.sibling));
   };
   
   if (fiberNode.child) {
     if (VERBOSE) console.log(`child node of ${fiberNode.name} found`);
-    climbFiber(new FiberNode(fiberNode.child));
+    buildFiberTree(new FiberNode(fiberNode.child));
   };
 
   return fiberNode;
 };
+
+const walkFiberTree = function(fiberNode, callback, type = 'head', size = 0) {
+  // fiberNode types = head, sibling, child
+  if (typeof callback !== 'function') throw 'Callback function required';
+
+  size += 1;
+  
+  callback(fiberNode, type, size);
+
+  if (fiberNode.sibling) walkFiberTree(fiberNode.sibling, callback, type = 'sibling', size);
+
+  if (fiberNode.child) walkFiberTree(fiberNode.child, callback, type = 'child', size);
+};
+
 
 // this is for testing the above by running it on a page and traversing through the first Fiber root
 let roots = getReactRoots();
 let firstRootNode = roots[0] ? roots[0] : null;
 let reactID = getReactID(firstRootNode);
 let hostRoot = getHostRoot(firstRootNode);
-let reactTree = climbFiber(hostRoot);
+let reactTree = buildFiberTree(hostRoot);
+
+function callback(fiberNode, type, size) {
+  console.log(`Current size is: ${size}`);
+  console.log(`Current node type is ${type}`);
+  if (fiberNode.rendersElement) console.log(`This renders an element`)
+  if (fiberNode.name) {
+    console.log(`Name at size ${size} is ${fiberNode.name}`);
+  } else {console.dir(fiberNode.instance)};
+};
+
+walkFiberTree(hostRoot, callback);
